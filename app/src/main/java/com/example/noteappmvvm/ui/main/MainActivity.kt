@@ -1,7 +1,8 @@
-package com.example.noteappmvvm
+package com.example.noteappmvvm.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.noteappmvvm.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
