@@ -28,11 +28,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
 //        InitViews
         binding?.apply {
+            //        support toolBar
+            setSupportActionBar(notesToolbar)
 //            getAllNotes
             viewModel.getAllNotes()
             viewModel.notesData.observe(this@MainActivity) {
+                showEmptyList(it.isEmpty)
                 notesAdapter.setData(it.data!!)
                 noteList.apply {
                     layoutManager =
@@ -53,11 +57,14 @@ class MainActivity : AppCompatActivity() {
         _binding = null
     }
 
-    private fun ShowEmptyList(isShown: Boolean) {
+    private fun showEmptyList(isShown: Boolean) {
         binding?.apply {
             if (isShown) {
                 emptyLay.visibility = View.VISIBLE
                 noteList.visibility = View.GONE
+            } else {
+                emptyLay.visibility = View.GONE
+                noteList.visibility = View.VISIBLE
             }
         }
     }
