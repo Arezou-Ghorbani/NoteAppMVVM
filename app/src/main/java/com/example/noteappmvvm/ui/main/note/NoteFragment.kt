@@ -41,18 +41,18 @@ class NoteFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //        initViews
+        // initViews
 
         binding?.apply {
-//Spinners
-//            categorySpinner
+            //Spinners
+            //categorySpinner
             viewModel.loadCategoriesData()
             viewModel.categoriesList.observe(viewLifecycleOwner) {
                 categoriesSpinner.setUpListWithAdapter(it) { itItem ->
                     category = itItem
                 }
             }
-//            prioritySpinner
+            //prioritySpinner
             viewModel.loadPriorityData()
             viewModel.priorityList.observe(viewLifecycleOwner) {
                 prioritySpinner.setUpListWithAdapter(it) { itItem ->
@@ -67,9 +67,18 @@ class NoteFragment : BottomSheetDialogFragment() {
                 entity.desc = des
                 entity.category = category
                 entity.priority = priority
-                viewModel.saveEditNote(false, entity)
+                if (tittle.isNotEmpty() && des.isNotEmpty()) {
+                    viewModel.saveEditNote(false, entity)
+
+                } else {
+
+                }
+
                 dismiss()
 
+            }
+            closeImg.setOnClickListener {
+                dismiss()
             }
         }
 
