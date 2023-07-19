@@ -8,11 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import com.example.noteappmvvm.R
+import com.example.noteappmvvm.data.model.NoteEntity
 import com.example.noteappmvvm.databinding.FragmentNoteBinding
 import com.example.noteappmvvm.viewModel.NoteViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import setUpListWithAdapter
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NoteFragment : BottomSheetDialogFragment() {
@@ -22,6 +24,10 @@ class NoteFragment : BottomSheetDialogFragment() {
 
     //    ViewModel
     private val viewModel: NoteViewModel by viewModels()
+
+    //entity
+    @Inject
+    lateinit var entity: NoteEntity
 
     //    Other
     private var category = ""
@@ -52,6 +58,18 @@ class NoteFragment : BottomSheetDialogFragment() {
                 prioritySpinner.setUpListWithAdapter(it) { itItem ->
                     priority = itItem
                 }
+            }
+            saveNote.setOnClickListener {
+                var tittle = titleEdt.text.toString()
+                var des = descEdt.text.toString()
+                entity.id = 0
+                entity.title = tittle
+                entity.desc = des
+                entity.category = category
+                entity.priority = priority
+                viewModel.saveEditNote(false, entity)
+                dismiss()
+
             }
         }
 
