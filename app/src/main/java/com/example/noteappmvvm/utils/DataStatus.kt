@@ -2,7 +2,8 @@ package com.example.noteappmvvm.utils
 
 data class DataStatus<out T>(val status:Status,val data:T?=null,val isEmpty:Boolean){
 enum class Status{
-    SUCCESS
+    SUCCESS,
+    FAIL
 }
     companion object{
         fun<T>success(data:T?,isEmpty: Boolean):DataStatus<T>{

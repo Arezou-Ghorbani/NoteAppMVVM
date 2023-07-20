@@ -2,13 +2,19 @@ package com.example.noteappmvvm.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.noteappmvvm.R
 import com.example.noteappmvvm.databinding.ActivityMainBinding
 import com.example.noteappmvvm.ui.main.note.NoteAdapter
 import com.example.noteappmvvm.ui.main.note.NoteFragment
+import com.example.noteappmvvm.utils.di.HIGH
+import com.example.noteappmvvm.utils.di.LOW
+import com.example.noteappmvvm.utils.di.NORMAL
 import com.example.noteappmvvm.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -21,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     //Others
     private val viewModel: MainViewModel by viewModels()
+    private var selectedItem = 0
+
 
     @Inject
     lateinit var notesAdapter: NoteAdapter
@@ -29,11 +37,11 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-//        InitViews
+        //        InitViews
         binding?.apply {
             //        support toolBar
             setSupportActionBar(notesToolbar)
-//            getAllNotes
+            //            getAllNotes
             viewModel.getAllNotes()
             viewModel.notesData.observe(this@MainActivity) {
                 showEmptyList(it.isEmpty)
@@ -67,5 +75,43 @@ class MainActivity : AppCompatActivity() {
                 noteList.visibility = View.VISIBLE
             }
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        val search = menu.findItem(R.id.actionSearch)
+        val searchView = search.actionView as SearchView
+        searchView.queryHint = getString(R.string.search)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.getSearchNotes(newText)
+                return true
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun priorityFilter() {
+        val builder = AlertDialog.Builder(this)
+
+        val priority = arrayOf("All", HIGH, NORMAL, LOW)
+        builder.setSingleChoiceItems(priority, selectedItem) { dialog, item ->
+            when (item) {
+                0 -> {
+                    viewModel.getAllNotes()
+                }
+                in 1..3 -> {
+                    viewModel.getFilterNotes(priority[item])
+                }
+            }
+            selectedItem = item
+            dialog.dismiss()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 }
