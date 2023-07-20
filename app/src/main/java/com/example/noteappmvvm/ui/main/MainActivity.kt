@@ -9,12 +9,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.noteappmvvm.R
+import com.example.noteappmvvm.data.model.NoteEntity
 import com.example.noteappmvvm.databinding.ActivityMainBinding
 import com.example.noteappmvvm.ui.main.note.NoteAdapter
 import com.example.noteappmvvm.ui.main.note.NoteFragment
-import com.example.noteappmvvm.utils.di.HIGH
-import com.example.noteappmvvm.utils.di.LOW
-import com.example.noteappmvvm.utils.di.NORMAL
+import com.example.noteappmvvm.utils.di.*
 import com.example.noteappmvvm.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private var selectedItem = 0
 
 
+    @Inject
+    lateinit var noteEntity: NoteEntity
     @Inject
     lateinit var notesAdapter: NoteAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,6 +56,38 @@ class MainActivity : AppCompatActivity() {
 
             addNoteBtn.setOnClickListener {
                 NoteFragment().show(supportFragmentManager, NoteFragment().tag)
+            }
+//            Filter
+            notesToolbar.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.actionFilter -> {
+                        priorityFilter()
+                        return@setOnMenuItemClickListener true
+                    }
+                    else -> {
+                        return@setOnMenuItemClickListener false
+                    }
+                }
+            }
+            //Clicks
+            notesAdapter.setOnItemClickListener { entity, type ->
+                when (type) {
+                    EDIT -> {
+                        val noteFragment = NoteFragment()
+                        val bundle = Bundle()
+                        bundle.putInt(BUNDLE_ID, entity.id)
+                        noteFragment.arguments = bundle
+                        noteFragment.show(supportFragmentManager, NoteFragment().tag)
+                    }
+                    DELETE -> {
+                        noteEntity.id = entity.id
+                        noteEntity.title = entity.title
+                        noteEntity.desc = entity.desc
+                        noteEntity.category = entity.category
+                        noteEntity.priority = entity.priority
+                        viewModel.deleteNote(noteEntity)
+                    }
+                }
             }
         }
 
@@ -114,4 +147,5 @@ class MainActivity : AppCompatActivity() {
         val dialog: AlertDialog = builder.create()
         dialog.show()
     }
+    jalase akhar 208
 }
