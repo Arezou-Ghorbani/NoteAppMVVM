@@ -89,7 +89,7 @@ class NoteFragment : BottomSheetDialogFragment() {
             saveNote.setOnClickListener {
                 var tittle = titleEdt.text.toString()
                 var des = descEdt.text.toString()
-                entity.id = 0
+                entity.id = noteId
                 entity.title = tittle
                 entity.desc = des
                 entity.category = category
