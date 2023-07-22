@@ -21,3 +21,14 @@ fun Spinner.setUpListWithAdapter(list: MutableList<String>, callBack: (String) -
 
     }
 }
+
+fun MutableList<out Any>.getIndexFromList(item: Any): Int {
+    var index = 0
+    for (i in this.indices) {
+        if (this[i] == item) {
+            index = i
+            break
+        }
+    }
+    return index
+}

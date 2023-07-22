@@ -16,6 +16,7 @@ import com.example.noteappmvvm.utils.di.NEW
 import com.example.noteappmvvm.viewModel.NoteViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import getIndexFromList
 import setUpListWithAdapter
 import javax.inject.Inject
 
@@ -37,6 +38,8 @@ class NoteFragment : BottomSheetDialogFragment() {
     private var priority = ""
     private var noteId = 0
     private var type = ""
+    private val categoriesList: MutableList<String> = mutableListOf()
+    private val prioritiesList: MutableList<String> = mutableListOf()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,12 +62,14 @@ class NoteFragment : BottomSheetDialogFragment() {
             viewModel.loadCategoriesData()
             viewModel.categoriesList.observe(viewLifecycleOwner) {
                 categoriesSpinner.setUpListWithAdapter(it) { itItem ->
+                    categoriesList.addAll(it)
                     category = itItem
                 }
             }
             //prioritySpinner
             viewModel.loadPriorityData()
             viewModel.priorityList.observe(viewLifecycleOwner) {
+                prioritiesList.addAll(it)
                 prioritySpinner.setUpListWithAdapter(it) { itItem ->
                     priority = itItem
                 }
@@ -76,6 +81,8 @@ class NoteFragment : BottomSheetDialogFragment() {
                     itData.data?.let { data ->
                         titleEdt.setText(data.title)
                         descEdt.setText(data.desc)
+                        categoriesSpinner.setSelection(categoriesList.getIndexFromList(data.category))
+                        prioritySpinner.setSelection(prioritiesList.getIndexFromList(data.priority))
                     }
                 }
             }
