@@ -10,6 +10,9 @@ import androidx.lifecycle.ViewModel
 import com.example.noteappmvvm.R
 import com.example.noteappmvvm.data.model.NoteEntity
 import com.example.noteappmvvm.databinding.FragmentNoteBinding
+import com.example.noteappmvvm.utils.di.BUNDLE_ID
+import com.example.noteappmvvm.utils.di.EDIT
+import com.example.noteappmvvm.utils.di.NEW
 import com.example.noteappmvvm.viewModel.NoteViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,8 +35,12 @@ class NoteFragment : BottomSheetDialogFragment() {
     //    Other
     private var category = ""
     private var priority = ""
+    private var noteId = 0
+    private var type = ""
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentNoteBinding.inflate(layoutInflater)
         return binding!!.root
@@ -41,8 +48,11 @@ class NoteFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        Bundle
+        noteId = arguments?.getInt(BUNDLE_ID) ?: 0
+//        Type
+        type = if (noteId > 0) EDIT else NEW
         // initViews
-
         binding?.apply {
             //Spinners
             //categorySpinner
@@ -59,6 +69,16 @@ class NoteFragment : BottomSheetDialogFragment() {
                     priority = itItem
                 }
             }
+//            NoteData
+            if (type == EDIT) {
+                viewModel.getNote(noteId)
+                viewModel.noteData.observe(viewLifecycleOwner) { itData ->
+                    itData.data?.let { data ->
+                        titleEdt.setText(data.title)
+                        descEdt.setText(data.desc)
+                    }
+                }
+            }
             saveNote.setOnClickListener {
                 var tittle = titleEdt.text.toString()
                 var des = descEdt.text.toString()
@@ -68,11 +88,16 @@ class NoteFragment : BottomSheetDialogFragment() {
                 entity.category = category
                 entity.priority = priority
                 if (tittle.isNotEmpty() && des.isNotEmpty()) {
-                    viewModel.saveEditNote(false, entity)
+                    if (type == NEW) {
+                        viewModel.saveEditNote(false, entity)
+                    } else {
+                        viewModel.saveEditNote(true, entity)
 
+                    }
                 } else {
 
                 }
+
 
                 dismiss()
 
